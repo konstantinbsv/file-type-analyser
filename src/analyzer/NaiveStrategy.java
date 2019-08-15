@@ -4,8 +4,6 @@ public class NaiveStrategy implements IAlgorithmStrategy {
 
     @Override
     public boolean search(byte[] fileArray, byte[] patternArray) {
-        boolean found = false;
-
         int fileSize = fileArray.length;
         int patternSize = patternArray.length;
 
@@ -19,9 +17,8 @@ public class NaiveStrategy implements IAlgorithmStrategy {
                 j++;
 
                 // if search pattern array completely traversed
-                if (j == patternSize) {
-                    found = true;
-                    break;
+                if (j == patternSize - 1) {
+                    return true;
                 }
             }
             // if bytes do not match, start search with one byte forward offset in file
@@ -31,6 +28,6 @@ public class NaiveStrategy implements IAlgorithmStrategy {
             }
         }
 
-        return found;
+        return false;
     }
 }
