@@ -18,6 +18,10 @@ public class Main {
         byte[] patternByteArray = searchPattern.getBytes();
         boolean found = false;
 
+        // Will be used to measure runtime of search algorithm
+        long startTime = 0;
+        long endTime = 0;
+
         switch (selectedAlgorithm) {
             case "--naive":
                 finder = new Finder(new NaiveStrategy());
@@ -35,7 +39,9 @@ public class Main {
             byte[] fileByteArray = new byte[(int) fileSize]; // initialize array with size of file
             inputStream.read(fileByteArray); // read file into array
 
+            startTime = System.nanoTime();
             found = finder.containsPattern(fileByteArray, patternByteArray);
+            endTime = System.nanoTime();
 
         } catch (IOException e) {
             e.printStackTrace();
@@ -46,5 +52,8 @@ public class Main {
         } else {
             System.out.println("Unknown file type");
         }
+
+        double algorithmRuntimeSeconds = (double) (endTime - startTime) / 1_000_000_000;
+        System.out.printf("Time elapsed %.5f seconds\n", algorithmRuntimeSeconds);
     }
 }
