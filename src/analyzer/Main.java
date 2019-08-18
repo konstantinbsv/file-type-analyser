@@ -4,56 +4,40 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
 
 public class Main {
 
     public static void main(String[] args) {
-        // java Main --KMP huge_doc.pdf "%PDF-" "PDF document"
-        String selectedAlgorithm = args[0];
-        String filepath = args[1];
-        String searchPattern = args[2];
-        String fileType = args[3];
+        final String selectedAlgorithm = "--KMP"; // Options: "--KMP", --"naive"
 
-        Finder finder;
-        byte[] patternByteArray = searchPattern.getBytes();
-        boolean found = false;
+        // java Main "%PDF-" "PDF document" test_files
+        final File directoryPath = new File(args[0]);
+        final String searchPattern = args[1];
+        final String fileType = args[2];
 
-        // Will be used to measure runtime of search algorithm
+        // final ExecutorService executor = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors());
+        final ExecutorService executor = Executors.newCachedThreadPool();
+
+        // Will be used to measure runtime of search
         long startTime = 0;
         long endTime = 0;
 
-        switch (selectedAlgorithm) {
-            case "--naive":
-                finder = new Finder(new NaiveStrategy());
-                break;
-            case "--KMP":
-                finder = new Finder(new KnuthMorrisPrattStrategy());
-                break;
-            default:
-                System.out.println("Invalid algorithm selected.");
-                return;
+        startTime = System.nanoTime();
+        for (final File file: directoryPath.listFiles()) {
+            if (!file.isDirectory()) {
+                Future future = executor.submit(new PatternMatcher(selectedAlgorithm, file, searchPattern, fileType));
+                while (!future.isDone());
+            }
         }
+        endTime = System.nanoTime();
 
-        try (InputStream inputStream = new FileInputStream(filepath)) {
-            long fileSize = new File(filepath).length(); // get size of file
-            byte[] fileByteArray = new byte[(int) fileSize]; // initialize array with size of file
-            inputStream.read(fileByteArray); // read file into array
 
-            startTime = System.nanoTime();
-            found = finder.containsPattern(fileByteArray, patternByteArray);
-            endTime = System.nanoTime();
-
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-
-        if (found) {
-            System.out.println(fileType);
-        } else {
-            System.out.println("Unknown file type");
-        }
-
-        double algorithmRuntimeSeconds = (double) (endTime - startTime) / 1_000_000_000;
-        System.out.printf("Time elapsed %.5f seconds\n", algorithmRuntimeSeconds);
+        executor.shutdown();
+        double runtimeSeconds = (double) (endTime - startTime) / 1_000_000_000;
+        // System.out.printf("Time elapsed %.5f seconds\n", runtimeSeconds);
     }
+
 }
