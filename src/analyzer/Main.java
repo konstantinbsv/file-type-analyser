@@ -1,12 +1,14 @@
 package analyzer;
 
+import kotlin.Function;
+
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.Future;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.concurrent.*;
 
 public class Main {
 
@@ -19,8 +21,9 @@ public class Main {
         final String fileType = args[2];
 
         // final ExecutorService executor = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors());
-        final ExecutorService executor = Executors.newFixedThreadPool(15); // need to pass test
+        final ExecutorService executor = Executors.newFixedThreadPool(10); // need to pass test
 
+        List<Callable<String>> matcherCallableList = new ArrayList<>();
         // Will be used to measure runtime of search
         long startTime = 0;
         long endTime = 0;
@@ -28,10 +31,18 @@ public class Main {
         startTime = System.nanoTime();
         for (final File file: directoryPath.listFiles()) {
             if (!file.isDirectory()) {
-                Future future = executor.submit(new PatternMatcher(selectedAlgorithm, file, searchPattern, fileType));
-                while (!future.isDone()); // needed to pass test
+                matcherCallableList.add(new PatternMatcher(selectedAlgorithm, file, searchPattern, fileType));
             }
         }
+        try {
+            List<Future<String>> futures = executor.invokeAll(matcherCallableList);
+            for (Future<String> future: futures) {
+                System.out.println(future.get(100, TimeUnit.MILLISECONDS));
+            }
+        } catch (InterruptedException | ExecutionException | TimeoutException e) {
+            e.printStackTrace();
+        }
+
         endTime = System.nanoTime();
 
 
