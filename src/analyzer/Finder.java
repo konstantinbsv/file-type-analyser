@@ -7,6 +7,19 @@ class Finder {
         this.algorithmStrategy = algorithmStrategy;
     }
 
+    Finder(String selectedAlgorithm) {
+        switch (selectedAlgorithm) {
+            case "--naive":
+                algorithmStrategy = new NaiveStrategy();
+                break;
+            case "--KMP":
+                algorithmStrategy = new KnuthMorrisPrattStrategy();
+                break;
+            default:
+                throw new IllegalArgumentException("Invalid algorithm selected.");
+        }
+    }
+
     boolean containsPattern(byte[] file, byte[] pattern) {
         return algorithmStrategy.search(file, pattern);
     }
