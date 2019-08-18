@@ -3,7 +3,7 @@ package analyzer;
 import java.io.*;
 import java.util.concurrent.Callable;
 
-public class PatternMatcher implements Callable {
+public class PatternMatcher implements Callable<String> {
     private File file;
     private String fileType;
     private Finder finder;
@@ -18,7 +18,7 @@ public class PatternMatcher implements Callable {
     }
 
     @Override
-    public Boolean call() {
+    public String call() {
         try (InputStream inputStream = new FileInputStream(file)) {
             long fileSize = file.length(); // get size of file
             byte[] fileByteArray = new byte[(int) fileSize]; // initialize array with size of file
@@ -30,12 +30,13 @@ public class PatternMatcher implements Callable {
             e.printStackTrace();
         }
 
+        String output;
         if (found) {
-            System.out.printf("%s: %s\n", file.getName(), fileType);
+            output = String.format("%s: %s", file.getName(), fileType);
         } else {
-            System.out.printf("%s: %s\n", file.getName(), "Unknown file type");
+            output = String.format("%s: %s", file.getName(), "Unknown file type");
         }
 
-        return found;
+        return output;
     }
 }
