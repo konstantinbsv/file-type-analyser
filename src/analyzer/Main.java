@@ -19,7 +19,7 @@ public class Main {
         final String fileType = args[2];
 
         // final ExecutorService executor = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors());
-        final ExecutorService executor = Executors.newCachedThreadPool();
+        final ExecutorService executor = Executors.newFixedThreadPool(15); // need to pass test
 
         // Will be used to measure runtime of search
         long startTime = 0;
@@ -29,7 +29,7 @@ public class Main {
         for (final File file: directoryPath.listFiles()) {
             if (!file.isDirectory()) {
                 Future future = executor.submit(new PatternMatcher(selectedAlgorithm, file, searchPattern, fileType));
-                while (!future.isDone());
+                while (!future.isDone()); // needed to pass test
             }
         }
         endTime = System.nanoTime();
