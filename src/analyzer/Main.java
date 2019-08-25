@@ -15,10 +15,9 @@ public class Main {
     public static void main(String[] args) {
         final String selectedAlgorithm = "--KMP"; // Options: "--KMP", --"naive"
 
-        // java Main "%PDF-" "PDF document" test_files
+        // java Main test_files patterns.db
         final File directoryPath = new File(args[0]);
-        final String searchPattern = args[1];
-        final String fileType = args[2];
+        final File database = new File(args[1]);
 
         // final ExecutorService executor = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors());
         final ExecutorService executor = Executors.newFixedThreadPool(10); // need to pass test
@@ -31,7 +30,7 @@ public class Main {
         startTime = System.nanoTime();
         for (final File file: directoryPath.listFiles()) {
             if (!file.isDirectory()) {
-                matcherCallableList.add(new PatternMatcher(selectedAlgorithm, file, searchPattern, fileType));
+                matcherCallableList.add(new PatternMatcher(selectedAlgorithm, file, database));
             }
         }
         try {
