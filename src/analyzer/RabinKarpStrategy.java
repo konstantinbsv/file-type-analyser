@@ -1,10 +1,9 @@
 package analyzer;
 
-public class RabinKarpStrategy implements IAlgorithmStrategy{
+public class RabinKarpStrategy implements IAlgorithmStrategy {
     // constants for polynomial hashing
     private static final int A = 53;
     private static final int M = 1_000_000_000 + 9;
-
 
     @Override
     public boolean search(byte[] fileArray, byte[] patternArray) {

@@ -15,6 +15,9 @@ class Finder {
             case "--KMP":
                 algorithmStrategy = new KnuthMorrisPrattStrategy();
                 break;
+            case "--RK":
+                algorithmStrategy = new RabinKarpStrategy();
+                break;
             default:
                 throw new IllegalArgumentException("Invalid algorithm selected.");
         }

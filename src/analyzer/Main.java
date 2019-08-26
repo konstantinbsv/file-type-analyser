@@ -8,7 +8,7 @@ import java.util.concurrent.*;
 public class Main {
 
     public static void main(String[] args) {
-        final String selectedAlgorithm = "--KMP"; // Options: "--KMP", --"naive"
+        final String selectedAlgorithm = "--RK"; // Options: "--KMP", --"naive", "--RK"
 
         // java Main test_files patterns.db
         final File directoryPath = new File(args[0]);
