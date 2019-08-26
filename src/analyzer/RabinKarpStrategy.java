@@ -3,10 +3,14 @@ package analyzer;
 public class RabinKarpStrategy implements IAlgorithmStrategy {
     // constants for polynomial hashing
     private static final int A = 53;
-    private static final int M = 1_000_000_000 + 9;
+    private static final int M = 1_000_000_009 + 9;
 
     @Override
     public boolean search(byte[] fileArray, byte[] patternArray) {
+        if (fileArray.length < patternArray.length) {
+            return false;
+        }
+
         long patternHash = 0;
         long currentSubstringHash = 0;
         long pow = 1; // A^0
@@ -17,8 +21,8 @@ public class RabinKarpStrategy implements IAlgorithmStrategy {
             patternHash  += patternArray[i] * pow;
             patternHash %= M;
 
-            currentSubstringHash += fileArray[fileArray.length - patternArray.length + 1] * pow;
-            currentSubstringHash &= M;
+            currentSubstringHash += fileArray[fileArray.length - patternArray.length + i] * pow;
+            currentSubstringHash %= M;
 
             // calculate next power
             if (i != patternArray.length - 1) {
@@ -33,7 +37,7 @@ public class RabinKarpStrategy implements IAlgorithmStrategy {
 
                 // perform symbol-by-symbol comparison of substring and pattern
                 for (int j = 0; j < patternArray.length; j++) {
-                    if (fileArray[j] != patternArray[j]) {
+                    if (fileArray[i - patternArray.length + j] != patternArray[j]) {
                         patternFound = false;
                         break;
                     }
